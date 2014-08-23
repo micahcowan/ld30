@@ -73,10 +73,10 @@ var w0speed = 0.25;
 var worldPaths = [
     // world 0
     [ new Wpath(world0pathForm, 0.0, w0speed)
-    , new Wpath(world0pathForm, 1/6.0, w0speed)
-    , new Wpath(world0pathForm, 2/6.0, w0speed)
+    //, new Wpath(world0pathForm, 1/6.0, w0speed)
+    //, new Wpath(world0pathForm, 2/6.0, w0speed)
     , new Wpath(world0pathForm, 3/6.0, w0speed)
-    , new Wpath(world0pathForm, 4/6.0, w0speed)
-    , new Wpath(world0pathForm, 5/6.0, w0speed)
+    //, new Wpath(world0pathForm, 4/6.0, w0speed)
+    //, new Wpath(world0pathForm, 5/6.0, w0speed)
     ]
 ];

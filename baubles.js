@@ -44,6 +44,8 @@ function init(ev) {
     window.addEventListener("keyup",
         function(ev) { shooter.handleKeyUp(ev); }, false);
 
+    createjs.Ticker.maxDelta = 200;
+
     startGame();
 }
 
@@ -127,8 +129,8 @@ function Shooter() {
 Shooter.X_POS = 200;
 Shooter.Y_POS = 550;
 Shooter.LENGTH = 100;
-Shooter.ROT_MIN = 45;
-Shooter.ROT_MAX = 135;
+Shooter.ROT_MIN = 35;
+Shooter.ROT_MAX = 145;
 // How far shooter can rotate by keypress in one second:
 Shooter.MOVE_RATE = Shooter.ROT_MAX - Shooter.ROT_MIN;
 Shooter.LT_KEYS = ['a', 'A', 'ArrowLeft', 'Left', 'U+0041'];
@@ -139,7 +141,8 @@ function Shot() {
     var sht = this;
     var s = sht.shape = new createjs.Shape;
     var g = s.graphics;
-    g.beginStroke("black").beginFill("#ffddaa").drawCircle(0,0,15).endStroke();
+    g.beginStroke("black").beginFill("#ffddaa").drawCircle(0,0,SHOT_RADIUS)
+        .endStroke();
     s.visible = false;
     stage.addChild(s);
 
@@ -152,10 +155,10 @@ function Shot() {
 
         if (s.y < STAGE_TOP || s.y > STAGE_BOTTOM) {
             // Destruction
-            createjs.Ticker.removeEventListener("tick", this.handleTick);
-            s.visible = false;
-            sht.fired = false;
+            sht.unfire();
+            return;
         }
+
         if (s.x < STAGE_LEFT) {
             s.x  = STAGE_LEFT;
             sht.h = -sht.h;
@@ -163,6 +166,10 @@ function Shot() {
         else if (s.x > STAGE_RIGHT) {
             s.x = STAGE_RIGHT;
             sht.h = -sht.h;
+        }
+
+        if (world.collides(s.x, s.y, SHOT_RADIUS)) {
+            sht.unfire();
         }
     }
     this.fire = function(ev) {
@@ -180,6 +187,11 @@ function Shot() {
 
         createjs.Ticker.addEventListener("tick", this.handleTick);
     }
+    this.unfire = function() {
+            createjs.Ticker.removeEventListener("tick", this.handleTick);
+            s.visible = false;
+            sht.fired = false;
+    }
 }
 Shot.SPEED = 500;
 
@@ -189,12 +201,26 @@ function World(n) {
     var shapes = [];
     for (var i=0; i < worldPaths[n].length; ++i) {
         var s = new createjs.Shape();
-        s.graphics.beginFill("#668").beginStroke("black").drawCircle(0,0,15);
+        s.graphics.beginFill("#668").beginStroke("black")
+            .drawCircle(0,0,SHOT_RADIUS);
         shapes[i] = s;
         //c.addChild(s);
         stage.addChild(s);
     }
     stage.addChild(c);
+
+    this.collides = function(x, y, radius) {
+        for (var i=0; i < worldPaths[n].length; ++i) {
+            // Pythagorean theorem to find distance between points.
+            var distX = x - worldPaths[n][i].x;
+            var distY = y - worldPaths[n][i].y;
+            var dist = Math.sqrt(distX * distX + distY * distY);
+            if (dist < radius + SHOT_RADIUS) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     this.handleTick = function(ev) {
         for (var i=0; i < worldPaths[n].length; ++i) {
@@ -210,3 +236,5 @@ var STAGE_LEFT = 0;
 var STAGE_TOP = 0;
 var STAGE_RIGHT;
 var STAGE_BOTTOM;
+
+var SHOT_RADIUS = 15;
