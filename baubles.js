@@ -27,15 +27,17 @@ var gameScreen;
 var stage;
 var shooter;
 var shot;
+var world;
 
 function init(ev) {
     gameScreen = document.getElementById("screen");
     stage = new createjs.Stage(gameScreen);
     shooter = new Shooter();
     shot = new Shot();
+    world = new World(0);
 
     STAGE_RIGHT  = gameScreen.width;
-    STAGE_BOTTOM = gameScreen.bottom;
+    STAGE_BOTTOM = gameScreen.height;
 
     window.addEventListener("keydown",
         function(ev) { shooter.handleKeyDown(ev); });
@@ -68,7 +70,7 @@ function Shooter() {
 
     this.shape.x = Shooter.X_POS;
     this.shape.y = Shooter.Y_POS;
-    this.shape.rotation = 90;
+    this.shape.rotation = 90; // straight "up"
 
     stage.addChild(this.shape);
 
@@ -110,6 +112,7 @@ function Shooter() {
     createjs.Ticker.addEventListener("tick",
         function(ev) { shtr.handleTick(ev); });
 }
+// Positions relative to screen size
 Shooter.X_POS = 200;
 Shooter.Y_POS = 550;
 Shooter.LENGTH = 100;
@@ -125,7 +128,7 @@ function Shot() {
     var sht = this;
     var s = sht.shape = new createjs.Shape;
     var g = s.graphics;
-    g.beginStroke("black").beginFill("#ffccaa").drawCircle(0,0,15).endStroke();
+    g.beginStroke("black").beginFill("#ffddaa").drawCircle(0,0,15).endStroke();
     s.visible = false;
     stage.addChild(s);
 
@@ -157,8 +160,10 @@ function Shot() {
         s.x = Shooter.X_POS;
         s.y = Shooter.Y_POS;
         // Horiz and vertical speeds.
-        sht.h = Shot.SPEED * Math.cos((180.0 - shooter.shape.rotation) * Math.PI / 180);
-        sht.v = Shot.SPEED * Math.sin(-shooter.shape.rotation * Math.PI / 180);
+        sht.h = Shot.SPEED
+            * Math.cos((180.0 - shooter.shape.rotation) * Math.PI / 180);
+        sht.v = Shot.SPEED
+            * Math.sin(-shooter.shape.rotation * Math.PI / 180);
         s.visible = true;
         sht.fired = true;
 
@@ -166,6 +171,29 @@ function Shot() {
     }
 }
 Shot.SPEED = 500;
+
+function World(n) {
+    var w = this;
+    var c = w.container = new createjs.Container();
+    var shapes = [];
+    for (var i=0; i < worldPaths[n].length; ++i) {
+        var s = new createjs.Shape();
+        s.graphics.beginFill("#668").beginStroke("black").drawCircle(0,0,15);
+        shapes[i] = s;
+        //c.addChild(s);
+        stage.addChild(s);
+    }
+    stage.addChild(c);
+
+    this.handleTick = function(ev) {
+        for (var i=0; i < worldPaths[n].length; ++i) {
+            worldPaths[n][i].advance(ev.delta);
+            shapes[i].x = worldPaths[n][i].x;
+            shapes[i].y = worldPaths[n][i].y;
+        }
+    }
+    createjs.Ticker.addEventListener("tick", this.handleTick);
+}
 
 var STAGE_LEFT = 0;
 var STAGE_TOP = 0;
