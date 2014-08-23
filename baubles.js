@@ -54,9 +54,11 @@ function startGame() {
 
 // Finds the right property to look up key names.
 function getKProp(ev) {
-    return ev.hasOwnProperty('key') ? ev.key
-         : ev.hasOwnProperty('keyIdentifier') ? ev.keyIdentifier
-         : undefined;
+    var k = ev.key;
+    if (k === undefined) {
+        k = ev.keyIdentifier;
+    }
+    return k;
 }
 
 window.addEventListener("load", init);
