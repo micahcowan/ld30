@@ -23,13 +23,19 @@
    See <http://www.gnu.org/licenses/> for details of the GNU GPL version 3.
 */
 
+var gameScreen;
 var stage;
 var shooter;
+var shot;
 
 function init(ev) {
-    var screen = document.getElementById("screen");
-    stage = new createjs.Stage(screen);
+    gameScreen = document.getElementById("screen");
+    stage = new createjs.Stage(gameScreen);
     shooter = new Shooter();
+    shot = new Shot();
+
+    STAGE_RIGHT  = gameScreen.width;
+    STAGE_BOTTOM = gameScreen.bottom;
 
     window.addEventListener("keydown",
         function(ev) { shooter.handleKeyDown(ev); });
@@ -75,6 +81,8 @@ function Shooter() {
         } else if (Shooter.RT_KEYS.indexOf(ev.key) != -1) {
             this.movement = 1;
             ev.preventDefault = true;
+        } else if (Shooter.FIRE_KEYS.indexOf(ev.key) != -1) {
+            shot.fire();
         }
     }
     this.handleKeyUp   = function (ev) {
@@ -98,7 +106,7 @@ function Shooter() {
         }
     }
 
-    var shtr= this;
+    var shtr = this;
     createjs.Ticker.addEventListener("tick",
         function(ev) { shtr.handleTick(ev); });
 }
@@ -111,3 +119,55 @@ Shooter.ROT_MAX = 135;
 Shooter.MOVE_RATE = Shooter.ROT_MAX - Shooter.ROT_MIN;
 Shooter.LT_KEYS = ['a', 'A', 'ArrowLeft', 'Left'];
 Shooter.RT_KEYS = ['d', 'D', 'ArrowRight', 'Right'];
+Shooter.FIRE_KEYS = [' ', 'Space', 'Enter', 'Return'];
+
+function Shot() {
+    var sht = this;
+    var s = sht.shape = new createjs.Shape;
+    var g = s.graphics;
+    g.beginStroke("black").beginFill("#ffccaa").drawCircle(0,0,15).endStroke();
+    s.visible = false;
+    stage.addChild(s);
+
+    sht.fired = false;
+
+    // Called as function: don't use "this".
+    this.handleTick = function(ev) {
+        s.x += sht.h * ev.delta / 1000.0;
+        s.y += sht.v * ev.delta / 1000.0;
+
+        if (s.y < STAGE_TOP || s.y > STAGE_BOTTOM) {
+            // Destruction
+            createjs.Ticker.removeEventListener("tick", this.handleTick);
+            s.visible = false;
+            sht.fired = false;
+        }
+        if (s.x < STAGE_LEFT) {
+            s.x  = STAGE_LEFT;
+            sht.h = -sht.h;
+        }
+        else if (s.x > STAGE_RIGHT) {
+            s.x = STAGE_RIGHT;
+            sht.h = -sht.h;
+        }
+    }
+    this.fire = function(ev) {
+        if (sht.fired) return;
+
+        s.x = Shooter.X_POS;
+        s.y = Shooter.Y_POS;
+        // Horiz and vertical speeds.
+        sht.h = Shot.SPEED * Math.cos((180.0 - shooter.shape.rotation) * Math.PI / 180);
+        sht.v = Shot.SPEED * Math.sin(-shooter.shape.rotation * Math.PI / 180);
+        s.visible = true;
+        sht.fired = true;
+
+        createjs.Ticker.addEventListener("tick", this.handleTick);
+    }
+}
+Shot.SPEED = 500;
+
+var STAGE_LEFT = 0;
+var STAGE_TOP = 0;
+var STAGE_RIGHT;
+var STAGE_BOTTOM;
