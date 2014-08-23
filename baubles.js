@@ -40,9 +40,9 @@ function init(ev) {
     STAGE_BOTTOM = gameScreen.height;
 
     window.addEventListener("keydown",
-        function(ev) { shooter.handleKeyDown(ev); });
+        function(ev) { shooter.handleKeyDown(ev); }, false);
     window.addEventListener("keyup",
-        function(ev) { shooter.handleKeyUp(ev); });
+        function(ev) { shooter.handleKeyUp(ev); }, false);
 
     startGame();
 }
@@ -50,6 +50,13 @@ function init(ev) {
 function startGame() {
     stage.update();
     createjs.Ticker.addEventListener("tick", stage);
+}
+
+// Finds the right property to look up key names.
+function getKProp(ev) {
+    return ev.hasOwnProperty('key') ? ev.key
+         : ev.hasOwnProperty('keyIdentifier') ? ev.keyIdentifier
+         : undefined;
 }
 
 window.addEventListener("load", init);
@@ -77,19 +84,21 @@ function Shooter() {
     this.movement = 0;
 
     this.handleKeyDown = function (ev) {
-        if (Shooter.LT_KEYS.indexOf(ev.key) != -1) {
+        var k = getKProp(ev);
+        if (Shooter.LT_KEYS.indexOf(k) != -1) {
             this.movement = -1;
             ev.preventDefault = true;
-        } else if (Shooter.RT_KEYS.indexOf(ev.key) != -1) {
+        } else if (Shooter.RT_KEYS.indexOf(k) != -1) {
             this.movement = 1;
             ev.preventDefault = true;
-        } else if (Shooter.FIRE_KEYS.indexOf(ev.key) != -1) {
+        } else if (Shooter.FIRE_KEYS.indexOf(k) != -1) {
             shot.fire();
         }
     }
     this.handleKeyUp   = function (ev) {
-        if ((this.movement < 0 && Shooter.LT_KEYS.indexOf(ev.key) != -1) ||
-            (this.movement > 0 && Shooter.RT_KEYS.indexOf(ev.key) != -1)) {
+        var k = getKProp(ev);
+        if ((this.movement < 0 && Shooter.LT_KEYS.indexOf(k) != -1) ||
+            (this.movement > 0 && Shooter.RT_KEYS.indexOf(k) != -1)) {
 
             this.movement = 0;
             ev.preventDefault = true;
@@ -120,9 +129,9 @@ Shooter.ROT_MIN = 45;
 Shooter.ROT_MAX = 135;
 // How far shooter can rotate by keypress in one second:
 Shooter.MOVE_RATE = Shooter.ROT_MAX - Shooter.ROT_MIN;
-Shooter.LT_KEYS = ['a', 'A', 'ArrowLeft', 'Left'];
-Shooter.RT_KEYS = ['d', 'D', 'ArrowRight', 'Right'];
-Shooter.FIRE_KEYS = [' ', 'Space', 'Enter', 'Return'];
+Shooter.LT_KEYS = ['a', 'A', 'ArrowLeft', 'Left', 'U+0041'];
+Shooter.RT_KEYS = ['d', 'D', 'ArrowRight', 'Right', 'U+0044'];
+Shooter.FIRE_KEYS = [' ', 'Space', 'Enter', 'Return', 'U+0020'];
 
 function Shot() {
     var sht = this;
