@@ -82,13 +82,98 @@ var worldDisconnections = [
   , ['Papa', 'Daddy', "Oh, no... I don't want to be THAT kind of Daddy!"]
   , ['Mama', 'Daddy', "Oh MY! <em>This</em> &ldquo;Daddy&rdquo; is sexier than your Papa, isn't he?"]
 ];
+
+// World, WorldChanger classes
+function World(n) {
+    var w = this;
+    var c = w.container = new createjs.Container();
+    var shapes = [];
+    for (var i=0; i < worldPaths[n].length; ++i) {
+        var s = new createjs.Sprite(spriteSheet);
+        s.gotoAndStop(i);
+        /* s.graphics.beginFill("#668").beginStroke("black")
+            .drawCircle(0,0,SHOT_RADIUS); */
+        shapes[i] = s;
+        c.addChild(s);
+        //stage.addChild(s);
+    }
+
+    this.handleTick = function(ev) {
+        if (ev.paused) return;
+        for (var i=0; i < worldPaths[n].length; ++i) {
+            worldPaths[n][i][0].advance(ev.delta);
+            worldPaths[n][i][1].advance(ev.delta);
+            shapes[i].x = worldPaths[n][i][0].val;
+            shapes[i].y = worldPaths[n][i][1].val;
+        }
+    };
+
+    this.whichWorld = n;
+}
+World.prototype = new (function(){
+    this.checkCollides = function(x, y, radius) {
+        var ret = undefined;
+        var n = this.whichWorld;
+        for (var i=0; i < worldPaths[n].length; ++i) {
+            // Pythagorean theorem to find distance between points.
+            var distX = x - worldPaths[n][i][0].val;
+            var distY = y - worldPaths[n][i][1].val;
+            var dist = Math.sqrt(distX * distX + distY * distY);
+            if (dist < radius + SHOT_RADIUS) {
+                ret = i;
+                break;
+            }
+        }
+        if (i !== undefined) {
+            var thing = worlds[this.whichWorld][1][i];
+            saySomething('<b>' + thing[0] + ':</b> ' + thing[1]);
+        }
+    };
+
+    this.activate = function(){
+        stage.addChild(this.container);
+        createjs.Ticker.addEventListener("tick", this.handleTick);
+    };
+
+    this.deactivate = function() {
+        stage.removeChild(this.container);
+        createjs.Ticker.removeEventListener("tick", this.handleTick);
+    };
+})();
+
+function WorldChanger() {
+    var wc = this;
+    var ws = wc.worlds = [ new World(0), new World(1) ];
+    wc.curWorldNum = 0;
+
+    function activate(n) {
+        if (ws[n] !== undefined) {
+            ws[wc.curWorldNum].deactivate();
+            wc.curWorldNum = n;
+            ws[wc.curWorldNum].activate();
+        }
+    }
+    activate(wc.curWorldNum);
+
+    this.change = function() {
+        var n = this.curWorldNum + 1;
+        if (n >= ws.length)
+            n = 0;
+        activate(n);
+    }
+
+    this.checkCollides = function(x, y, radius) {
+        ws[wc.curWorldNum].checkCollides(x, y, radius);
+    }
+}
+
 var w0speed = 0.25;
 var w0speed1 = -0.50;
 
 world0paths = circlePaths(200,200,140,{speed: w0speed});
 world0paths1 = circlePaths(200,200,50,{speed: w0speed1});
 
-w1varRad = new PathVar([[120],[160]],{speed: 2.5});
+w1varRad = new PathVar([[120],[160]],{speed: 2.15});
 world1paths = circlePaths(200,200,w1varRad,{speed: w0speed});
 
 var worldPaths = [

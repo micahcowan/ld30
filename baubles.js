@@ -29,6 +29,7 @@ var spriteSheet;
 var shooter;
 var shot;
 var world;
+var worldChanger;
 
 var music;
 
@@ -60,7 +61,7 @@ function init(ev) {
 
     shooter = new Shooter();
     shot = new Shot();
-    world = new World(1);
+    worldChanger = new WorldChanger();
 
     STAGE_RIGHT  = gameScreen.width;
     STAGE_BOTTOM = gameScreen.height;
@@ -109,12 +110,10 @@ function getKProp(ev) {
     return k;
 }
 
-// idx: Index into which actor in this world should say something
-function saySomething(idx) {
-    var thing = worlds[world.whichWorld][1][idx];
+function saySomething(phrase) {
     createjs.Ticker.setPaused(true);
     var t = tContent;
-    t.innerHTML = '<b>' + thing[0] + ':</b> ' + thing[1];
+    t.innerHTML = phrase;
     tContainer.style.visibility = 'visible';
 }
 
@@ -153,11 +152,25 @@ function Shooter() {
         if (Shooter.LT_KEYS.indexOf(k) != -1) {
             this.movement = -1;
             ev.preventDefault = true;
-        } else if (Shooter.RT_KEYS.indexOf(k) != -1) {
+        }
+        else if (Shooter.RT_KEYS.indexOf(k) != -1) {
             this.movement = 1;
             ev.preventDefault = true;
-        } else if (Shooter.FIRE_KEYS.indexOf(k) != -1) {
+        }
+        else if (Shooter.FIRE_KEYS.indexOf(k) != -1) {
             shot.fire();
+        }
+        else if (Shooter.TALK_KEYS.indexOf(k) != -1) {
+            if (!shot.fired)
+                shot.shotType = Shot.TYPE_TALK;
+        }
+        else if (Shooter.GRAB_KEYS.indexOf(k) != -1) {
+            if (!shot.fired)
+                shot.shotType = Shot.TYPE_GRAB;
+        }
+        else if (Shooter.CONNECT_KEYS.indexOf(k) != -1) {
+            if (!shot.fired)
+                shot.shotType = Shot.TYPE_CONNECT;
         }
     }
     this.handleKeyUp   = function (ev) {
@@ -170,6 +183,10 @@ function Shooter() {
         }
         else if (Shooter.MUSIC_KEYS.indexOf(k) != -1 && music !== undefined) {
             music.pause() || music.resume();
+        }
+        else if (Shooter.WORLD_KEYS.indexOf(k) != -1) {
+            worldChanger.change();
+            ev.preventDefault = true;
         }
     }
     this.handleTick    = function (ev) {
@@ -202,11 +219,15 @@ Shooter.LT_KEYS = ['a', 'A', 'ArrowLeft', 'Left', 'U+0041'];
 Shooter.RT_KEYS = ['d', 'D', 'ArrowRight', 'Right', 'U+0044'];
 Shooter.FIRE_KEYS = [' ', 'Space', 'Enter', 'Return', 'U+0020', 'W', 'w', 'U+0057', 'Up', 'ArrowUp'];
 Shooter.MUSIC_KEYS = ['M', 'm', 'U+004D'];
+Shooter.TALK_KEYS = ['T', 't', 'U+0054'];
+Shooter.GRAB_KEYS = ['G', 'g', 'U+0047'];
+Shooter.CONNECT_KEYS = ['C', 'c', 'U+0043'];
+//Shooter.WORLD_KEYS = ['Tab'];
+Shooter.WORLD_KEYS = ['Q', 'q', 'U+0051'];
 
 function Shot() {
     var sht = this;
     var s = sht.sprite = new createjs.Sprite(spriteSheet);
-    s.gotoAndStop(5);
     /*
     var s = sht.shape = new createjs.Shape;
     var g = s.graphics;
@@ -237,10 +258,7 @@ function Shot() {
             sht.h = -sht.h;
         }
 
-        var idx = world.checkCollides(s.x, s.y, SHOT_RADIUS);
-        if (idx !== undefined) {
-            saySomething(idx);
-        }
+        var idx = worldChanger.checkCollides(s.x, s.y, SHOT_RADIUS);
     }
     this.fire = function(ev) {
         if (sht.fired) return;
@@ -252,6 +270,7 @@ function Shot() {
             * Math.cos((180.0 - shooter.shape.rotation) * Math.PI / 180);
         sht.v = Shot.SPEED
             * Math.sin(-shooter.shape.rotation * Math.PI / 180);
+        s.gotoAndStop(sht.shotType);
         stage.addChild(s);
         sht.fired = true;
 
@@ -264,50 +283,12 @@ function Shot() {
             stage.removeChild(s);
             sht.fired = false;
     }
+    this.shotType = Shot.TYPE_TALK;
 }
 Shot.SPEED = 450;
-
-function World(n) {
-    var w = this;
-    var c = w.container = new createjs.Container();
-    var shapes = [];
-    for (var i=0; i < worldPaths[n].length; ++i) {
-        var s = new createjs.Sprite(spriteSheet);
-        s.gotoAndStop(i);
-        /* s.graphics.beginFill("#668").beginStroke("black")
-            .drawCircle(0,0,SHOT_RADIUS); */
-        shapes[i] = s;
-        //c.addChild(s);
-        stage.addChild(s);
-    }
-    stage.addChild(c);
-
-    this.checkCollides = function(x, y, radius) {
-        for (var i=0; i < worldPaths[n].length; ++i) {
-            // Pythagorean theorem to find distance between points.
-            var distX = x - worldPaths[n][i][0].val;
-            var distY = y - worldPaths[n][i][1].val;
-            var dist = Math.sqrt(distX * distX + distY * distY);
-            if (dist < radius + SHOT_RADIUS) {
-                return i;
-            }
-        }
-        return undefined;
-    }
-
-    this.handleTick = function(ev) {
-        if (ev.paused) return;
-        for (var i=0; i < worldPaths[n].length; ++i) {
-            worldPaths[n][i][0].advance(ev.delta);
-            worldPaths[n][i][1].advance(ev.delta);
-            shapes[i].x = worldPaths[n][i][0].val;
-            shapes[i].y = worldPaths[n][i][1].val;
-        }
-    }
-    createjs.Ticker.addEventListener("tick", this.handleTick);
-
-    this.whichWorld = n;
-}
+Shot.TYPE_TALK = 5;
+Shot.TYPE_GRAB = 6;
+Shot.TYPE_CONNECT = 0;
 
 var STAGE_LEFT = 0;
 var STAGE_TOP = 0;
