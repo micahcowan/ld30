@@ -29,6 +29,8 @@ var shooter;
 var shot;
 var world;
 
+var music;
+
 var tContainer;
 var tContent;
 
@@ -56,7 +58,21 @@ function init(ev) {
     tContainer.style.width = gameScreen.offsetWidth + 'px';
     tContent = document.getElementById("tContent");
 
+    createjs.Sound.alternateExtensions = ["mp3"];
+    createjs.Sound.addEventListener("fileload", playMusic);
+    createjs.Sound.registerSound("friendly-ditty.mp3", "music");
+
     startGame();
+}
+
+function playMusic(event) {
+    if (music === undefined) {
+        music = createjs.Sound.play("music", {loop: -1});
+        music.volume = 0.5;
+    }
+    else {
+        //music.play();
+    }
 }
 
 function startGame() {
@@ -132,6 +148,9 @@ function Shooter() {
             this.movement = 0;
             ev.preventDefault = true;
         }
+        else if (Shooter.MUSIC_KEYS.indexOf(k) != -1 && music !== undefined) {
+            music.pause() || music.resume();
+        }
     }
     this.handleTick    = function (ev) {
         if (ev.paused) return;
@@ -162,6 +181,7 @@ Shooter.MOVE_RATE = Shooter.ROT_MAX - Shooter.ROT_MIN;
 Shooter.LT_KEYS = ['a', 'A', 'ArrowLeft', 'Left', 'U+0041'];
 Shooter.RT_KEYS = ['d', 'D', 'ArrowRight', 'Right', 'U+0044'];
 Shooter.FIRE_KEYS = [' ', 'Space', 'Enter', 'Return', 'U+0020', 'W', 'w', 'U+0057', 'Up', 'ArrowUp'];
+Shooter.MUSIC_KEYS = ['M', 'm', 'U+004D'];
 
 function Shot() {
     var sht = this;
