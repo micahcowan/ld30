@@ -298,9 +298,10 @@ function World(n) {
     this.handleTick = function(ev) {
         if (ev.paused) return;
         for (var i=0; i < worldPaths[n].length; ++i) {
-            worldPaths[n][i].advance(ev.delta);
-            shapes[i].x = worldPaths[n][i].x;
-            shapes[i].y = worldPaths[n][i].y;
+            worldPaths[n][i][0].advance(ev.delta);
+            worldPaths[n][i][1].advance(ev.delta);
+            shapes[i].x = worldPaths[n][i][0].val;
+            shapes[i].y = worldPaths[n][i][1].val;
         }
     }
     createjs.Ticker.addEventListener("tick", this.handleTick);

@@ -80,20 +80,23 @@ var worldDisconnections = [
 
     // Person -> Person
   , ['Papa', 'Daddy', "Oh, no... I don't want to be THAT kind of Daddy!"]
-  , ['Mama', 'Daddy', "Oh MY! This &ldquo;Daddy&rdquo; is sexier than your Papa, isn't he?"]
+  , ['Mama', 'Daddy', "Oh MY! <em>This</em> &ldquo;Daddy&rdquo; is sexier than your Papa, isn't he?"]
 ];
-
-world0pathForm = new CirclePathForm(200,200,140);
-world1pathForm = new CirclePathForm(200,200,50);
-
 var w0speed = 0.25;
-var w1speed = -0.50;
+var w0speed1 = -0.50;
+
+world0paths = circlePaths(200,200,140,{speed: w0speed});
+world0paths1 = circlePaths(200,200,50,{speed: w0speed1});
+
+//world1subpathForm = new OneDPathForm(120,140
+//world1pathForm = new CirclePathForm(200,200,140);
+
 var worldPaths = [
     // world 0
-    [ new Wpath(world0pathForm, 0.0, w0speed)
-    , new Wpath(world0pathForm, 1/3.0, w0speed)
-    , new Wpath(world0pathForm, 2/3.0, w0speed)
-    , new Wpath(world1pathForm, 1/4.0, w1speed)
-    , new Wpath(world1pathForm, 3/4.0, w1speed)
+    [ world0paths
+    , adjustedPaths(world0paths, {pos: 1/3.0})
+    , adjustedPaths(world0paths, {pos: 2/3.0})
+    , adjustedPaths(world0paths1, {pos: 1/4.0})
+    , adjustedPaths(world0paths1, {pos: 3/4.0})
     ]
 ];
