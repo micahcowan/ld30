@@ -83,15 +83,17 @@ var worldDisconnections = [
   , ['Mama', 'Daddy', "Oh MY! This &ldquo;Daddy&rdquo; is sexier than your Papa, isn't he?"]
 ];
 
-world0pathForm = new CirclePathForm(200,200,75);
+world0pathForm = new CirclePathForm(200,200,100);
+world1pathForm = new CirclePathForm(200,200,32);
 
-var w0speed = 0.15;
+var w0speed = 0.25;
+var w1speed = -0.33;
 var worldPaths = [
     // world 0
     [ new Wpath(world0pathForm, 0.0, w0speed)
-    , new Wpath(world0pathForm, 1/5.0, w0speed)
-    , new Wpath(world0pathForm, 2/5.0, w0speed)
-    , new Wpath(world0pathForm, 3/5.0, w0speed)
-    , new Wpath(world0pathForm, 4/5.0, w0speed)
+    , new Wpath(world0pathForm, 1/3.0, w0speed)
+    , new Wpath(world0pathForm, 2/3.0, w0speed)
+    , new Wpath(world1pathForm, 1/4.0, w1speed)
+    , new Wpath(world1pathForm, 3/4.0, w1speed)
     ]
 ];
