@@ -61,17 +61,15 @@ function init(ev) {
     createjs.Sound.alternateExtensions = ["mp3"];
     createjs.Sound.addEventListener("fileload", playMusic);
     createjs.Sound.registerSound("friendly-ditty.mp3", "music");
+    createjs.Sound.registerSound("shoot.mp3", "shoot");
 
     startGame();
 }
 
 function playMusic(event) {
-    if (music === undefined) {
+    if (event.id == "music" && music === undefined) {
         music = createjs.Sound.play("music", {loop: -1});
         music.volume = 0.5;
-    }
-    else {
-        //music.play();
     }
 }
 
@@ -232,6 +230,8 @@ function Shot() {
         sht.fired = true;
 
         createjs.Ticker.addEventListener("tick", this.handleTick);
+        var shoot = createjs.Sound.play("shoot");
+        shoot.volume = 0.5;
     }
     this.unfire = function() {
             createjs.Ticker.removeEventListener("tick", this.handleTick);
