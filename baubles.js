@@ -25,6 +25,7 @@
 
 var gameScreen;
 var stage;
+var spriteSheet;
 var shooter;
 var shot;
 var world;
@@ -42,6 +43,16 @@ function init(ev) {
     backdrop = new createjs.Shape();
     backdrop.graphics.beginFill("#88a").drawRect(0,0,400,600);
     stage.addChild(backdrop);
+
+    spriteSheet = new createjs.SpriteSheet({
+        images: ["sprites.svg"],
+        frames: {
+            width: 64,
+            height: 64,
+            regX: 32,
+            regY: 32,
+        }
+    });
 
     shooter = new Shooter();
     shot = new Shot();
@@ -190,12 +201,16 @@ Shooter.MUSIC_KEYS = ['M', 'm', 'U+004D'];
 
 function Shot() {
     var sht = this;
+    var s = sht.sprite = new createjs.Sprite(spriteSheet);
+    s.gotoAndStop(5);
+    /*
     var s = sht.shape = new createjs.Shape;
     var g = s.graphics;
     g.beginStroke("black").beginFill("#ffddaa").drawCircle(0,0,SHOT_RADIUS)
         .endStroke();
 
     sht.fired = false;
+    */
 
     // Called as function: don't use "this".
     this.handleTick = function(ev) {
@@ -246,20 +261,11 @@ function Shot() {
             sht.fired = false;
     }
 }
-Shot.SPEED = 500;
+Shot.SPEED = 450;
 
 function World(n) {
     var w = this;
     var c = w.container = new createjs.Container();
-    var spriteSheet = new createjs.SpriteSheet({
-        images: ["sprites.svg"],
-        frames: {
-            width: 64,
-            height: 64,
-            regX: 32,
-            regY: 32,
-        }
-    });
     var shapes = [];
     for (var i=0; i < worldPaths[n].length; ++i) {
         var s = new createjs.Sprite(spriteSheet);
@@ -303,4 +309,4 @@ var STAGE_TOP = 0;
 var STAGE_RIGHT;
 var STAGE_BOTTOM;
 
-var SHOT_RADIUS = 15;
+var SHOT_RADIUS = 16;

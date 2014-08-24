@@ -29,9 +29,9 @@ var worlds = [
     ['Family',
       [ ['Mama', "Did Papa forget our anniversary again? Oh dear..."]
       , ['Papa', "I'm going to need another cup of coffee."]
+      , ['Spot', "*Arf*... Spot wants a BONE!"]
       , ['Little Billy', "I like trucks! Vroom..."]
       , ['Little Suzie', "Ha ha, you're such a n00b!"]
-      , ['Spot', "*Arf*... Spot wants a BONE!"]
       ]
     ]
   , ['Gamers',
@@ -83,11 +83,11 @@ var worldDisconnections = [
   , ['Mama', 'Daddy', "Oh MY! This &ldquo;Daddy&rdquo; is sexier than your Papa, isn't he?"]
 ];
 
-world0pathForm = new CirclePathForm(200,200,100);
-world1pathForm = new CirclePathForm(200,200,32);
+world0pathForm = new CirclePathForm(200,200,140);
+world1pathForm = new CirclePathForm(200,200,50);
 
 var w0speed = 0.25;
-var w1speed = -0.33;
+var w1speed = -0.50;
 var worldPaths = [
     // world 0
     [ new Wpath(world0pathForm, 0.0, w0speed)
