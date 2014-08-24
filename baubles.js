@@ -30,6 +30,7 @@ var shooter;
 var shot;
 var world;
 var worldChanger;
+var grabbed;
 
 var music;
 

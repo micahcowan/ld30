@@ -86,15 +86,19 @@ var worldDisconnections = [
 // World, WorldChanger classes
 function World(n) {
     var w = this;
-    var c = w.container = new createjs.Container();
-    var shapes = [];
+
+    // Load the world's actors (they can get swapped later)
+    var actors = this.actors = [];
     for (var i=0; i < worldPaths[n].length; ++i) {
-        var s = new createjs.Sprite(spriteSheet);
-        s.gotoAndStop(i);
-        /* s.graphics.beginFill("#668").beginStroke("black")
-            .drawCircle(0,0,SHOT_RADIUS); */
-        shapes[i] = s;
-        c.addChild(s);
+        actors[i] = new Actor(n, i);
+        actors[i].graphics.x = worldPaths[n][i][0].val;
+        actors[i].graphics.y = worldPaths[n][i][1].val;
+    }
+
+    var c = w.container = new createjs.Container();
+    // Load this world's sprites
+    for (var i=0; i < worldPaths[n].length; ++i) {
+        c.addChild(actors[i].graphics);
         //stage.addChild(s);
     }
 
@@ -103,8 +107,10 @@ function World(n) {
         for (var i=0; i < worldPaths[n].length; ++i) {
             worldPaths[n][i][0].advance(ev.delta);
             worldPaths[n][i][1].advance(ev.delta);
-            shapes[i].x = worldPaths[n][i][0].val;
-            shapes[i].y = worldPaths[n][i][1].val;
+            if (actors[i] !== undefined) { // could be grabbed
+                actors[i].graphics.x = worldPaths[n][i][0].val;
+                actors[i].graphics.y = worldPaths[n][i][1].val;
+            }
         }
     };
 
@@ -124,9 +130,22 @@ World.prototype = new (function(){
                 break;
             }
         }
-        if (i !== undefined) {
-            var thing = worlds[this.whichWorld][1][i];
-            saySomething('<b>' + thing[0] + ':</b> ' + thing[1]);
+        if (ret !== undefined && this.actors[ret] !== undefined) {
+            if (shot.shotType == Shot.TYPE_TALK) {
+                //var thing = worlds[this.whichWorld][1][i];
+                var phrase = this.actors[i].phrase();
+                saySomething('<b>' + this.actors[i].name + ':</b> ' + phrase);
+                // unfire is handled after saySomething is turned off.
+            }
+            else if (shot.shotType == Shot.TYPE_GRAB) {
+                if (grabbed != undefined) {
+                    grabbed.goHome();
+                }
+                grabbed = this.actors[i];
+                this.actors[i].graphics.visible = false;
+                this.actors[i] = undefined;
+                shot.unfire();
+            }
         }
     };
 
@@ -165,6 +184,28 @@ function WorldChanger() {
     this.checkCollides = function(x, y, radius) {
         ws[wc.curWorldNum].checkCollides(x, y, radius);
     }
+}
+
+function Actor(wNum, aNum) {
+                //var thing = worlds[this.whichWorld][1][i];
+    var entry = worlds[wNum][1][aNum];
+
+    this.name = entry[0];
+    this.phrase = function() {
+        return entry[1];
+    }
+    this.goHome = function() {
+        var homeWorld = worldChanger.worlds[wNum];
+        if (homeWorld.actors[aNum] !== undefined)
+            throw ("Hey! actor " + this.name + " wants to go home to "
+                   + wNum + ":" + aNum + ", but not empty.");
+        homeWorld.actors[aNum] = this;
+        this.graphics.visible= true;
+    }
+
+    this.spriteNum = aNum;
+    this.graphics = new createjs.Sprite(spriteSheet);
+    this.graphics.gotoAndStop(this.spriteNum);
 }
 
 var w0speed = 0.25;
