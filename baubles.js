@@ -33,10 +33,16 @@ var music;
 
 var tContainer;
 var tContent;
+var backdrop;
 
 function init(ev) {
     gameScreen = document.getElementById("screen");
     stage = new createjs.Stage(gameScreen);
+
+    backdrop = new createjs.Shape();
+    backdrop.graphics.beginFill("#88a").drawRect(0,0,400,600);
+    stage.addChild(backdrop);
+
     shooter = new Shooter();
     shot = new Shot();
     world = new World(0);
@@ -52,11 +58,12 @@ function init(ev) {
     createjs.Ticker.maxDelta = 200;
 
     tContainer = document.getElementById("tContainer");
+    tContent = document.getElementById("tContent");
+
     tContainer.style.left = gameScreen.offsetLeft + 'px';
     tContainer.style.top = gameScreen.offsetTop + 'px';
     tContainer.style.height = gameScreen.offsetHeight + 'px';
     tContainer.style.width = gameScreen.offsetWidth + 'px';
-    tContent = document.getElementById("tContent");
 
     createjs.Sound.alternateExtensions = ["mp3"];
     createjs.Sound.addEventListener("fileload", playMusic);

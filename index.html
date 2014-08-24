@@ -16,21 +16,20 @@
 
         <style type="text/css">
             html, body {
+                top: 0; left: 0; margin: 0;
                 width: 100%;
                 text-align: center;
                 position: relative;
             }
 
-            #screen {
-                border: solid 1px silver;
-                margin-left: auto;
-                margin-right: auto;
-            }
-
             #tContainer {
                 //background-color: silver;
+                display: block;
                 visibility: hidden;
                 position: absolute;
+                top: 0; left: 0;
+                width: 400px; height: 600px;
+                margin-left: auto; margin-right: auto;
                 z-index: 10;
             }
 
@@ -42,13 +41,24 @@
                 margin: 15px;
                 //bottom: 300px;
             }
+
+            #combiner {
+                display: block;
+                margin-left: auto; margin-right: auto;
+                border: solid 3px silver;
+                width: 400px;
+                height: 600px;
+                top: 0; left: 0;
+            }
         </style>
     </head>
     <body>
-        <canvas id="screen" width="400" height="600"></canvas>
-        <div id="tContainer">
-            <div id="tContent">
-                <b>Micah</b> Hello, world!
+        <div id="combiner">
+            <canvas id="screen" width="400" height="600"></canvas>
+            <div id="tContainer">
+                <div id="tContent">
+                    <b>Micah</b> Hello, world!
+                </div>
             </div>
         </div>
     </body>
