@@ -41,7 +41,11 @@ function init(ev) {
     stage = new createjs.Stage(gameScreen);
 
     backdrop = new createjs.Shape();
-    backdrop.graphics.beginFill("#88a").drawRect(0,0,400,600);
+    backdrop.graphics
+        .beginRadialGradientFill(["#88a","#446"],[0,1],
+                                 200, 200, 128,
+                                 200, 300, 600)
+        .drawRect(0,0,400,600);
     stage.addChild(backdrop);
 
     spriteSheet = new createjs.SpriteSheet({
