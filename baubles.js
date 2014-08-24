@@ -285,8 +285,8 @@ function World(n) {
     this.checkCollides = function(x, y, radius) {
         for (var i=0; i < worldPaths[n].length; ++i) {
             // Pythagorean theorem to find distance between points.
-            var distX = x - worldPaths[n][i].x;
-            var distY = y - worldPaths[n][i].y;
+            var distX = x - worldPaths[n][i][0].val;
+            var distY = y - worldPaths[n][i][1].val;
             var dist = Math.sqrt(distX * distX + distY * distY);
             if (dist < radius + SHOT_RADIUS) {
                 return i;

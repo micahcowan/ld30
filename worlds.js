@@ -88,8 +88,8 @@ var w0speed1 = -0.50;
 world0paths = circlePaths(200,200,140,{speed: w0speed});
 world0paths1 = circlePaths(200,200,50,{speed: w0speed1});
 
-//world1subpathForm = new OneDPathForm(120,140
-//world1pathForm = new CirclePathForm(200,200,140);
+w1varRad = new PathVar([[120],[160]],{speed: 2.0});
+world1paths = circlePaths(200,200,w1varRad,{speed: w0speed});
 
 var worldPaths = [
     // world 0
@@ -98,5 +98,12 @@ var worldPaths = [
     , adjustedPaths(world0paths, {pos: 2/3.0})
     , adjustedPaths(world0paths1, {pos: 1/4.0})
     , adjustedPaths(world0paths1, {pos: 3/4.0})
+    ]
+    // world 1
+  , [ world1paths
+    , adjustedPaths(world1paths, {pos: 1/5.0})
+    , adjustedPaths(world1paths, {pos: 2/5.0})
+    , adjustedPaths(world1paths, {pos: 3/5.0})
+    , adjustedPaths(world1paths, {pos: 4/5.0})
     ]
 ];

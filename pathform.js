@@ -48,32 +48,29 @@ ConstPath.prototype = {
     advance: function(delta) { return this.val; }
 }
 
-function CirclePath(x, r, props) {
-    this.centerX = num(x);
-    this.radius = num(r);
-
-    this.speed = DEFAULT_SPEED;
-    this.pos = 0.0;
-    this.fn = Math.sin;
-    if (props === undefined)
-        props = {}
-    var pkeys = Object.keys(props);
-    for (var i=0; i < pkeys.length; ++i) {
-        var k = pkeys[i];
-        if (pkeys[i] == 'pos') {
-            this[k] = props[k];
-        }
-        else {
-            this[k] = num(props[k])
+var pathBaseProto = {
+    cloneFill: ['speed', 'pos']
+  , speed: DEFAULT_SPEED
+  , pos: 0.0
+  , copyProps: function(props) {
+        if (props === undefined)
+            props = {}
+        var pkeys = Object.keys(props);
+        for (var i=0; i < pkeys.length; ++i) {
+            var k = pkeys[i];
+            if (pkeys[i] == 'pos') {
+                this[k] = props[k];
+            }
+            else {
+                this[k] = num(props[k])
+            }
         }
     }
-}
-CirclePath.prototype = {
-    advance: function(delta) {
+  , advance: function(delta) {
         this.pos = (this.pos + this.speed.val * delta/1000.0) % 100.0;
     }
   , clone: function(props) {
-        pnams = ['speed', 'pos', 'fn'];
+        pnams = this.cloneFill;
         var nProps = {};
         var pkeys = Object.keys(props);
         for (var i=0; i < pkeys.length; ++i) {
@@ -91,19 +88,87 @@ CirclePath.prototype = {
                 }
             }
         }
-        return new CirclePath(
-            this.centerX
-          , this.radius
-          , nProps
-        );
+        return this.protClone(nProps);
     }
 };
-Object.defineProperty(CirclePath.prototype, 'val', {
+
+function PathVar(seq, props) {
+    this.seq = seq;
+    this.copyProps(props);
+
+    // Ensure seq is normalized.
+    var total = 0;
+    for (var i=0; i < seq.length; ++i) {
+        var s = seq[i];
+        if (s[1] == undefined)
+            s[1] = 1;
+        total += s[1];
+    }
+    for (var i=0; i < seq.length; ++i) {
+        var s = seq[i];
+        s[1] = s[1]/total;
+    }
+}
+var pathVarProto = Object.create(pathBaseProto);
+Object.defineProperty(pathVarProto, 'val', {
     enumerable: true
   , get: function() {
-        return this.centerX.val + this.fn(this.pos * 2.0 * Math.PI) * this.radius.val;
+        var p = this.pos;
+        var s;
+        var sn;
+        var seq = this.seq
+        var acc = 0; // What percent the current transition starts at
+
+        // We're finding where in the sequence of transitions we should be,
+        // based on our position (0.0 -> 1.0)
+
+        // FIXME, should cache where we are within seq to improve performance
+        for (var i=0; i < seq.length; ++i) {
+            if (i > 0)
+                acc += seq[i-1][1];
+            if (acc <= p)
+                s = seq[i];
+            else {
+                sn = seq[i];
+                break;
+            }
+        }
+        if (sn == undefined)
+            sn = seq[0];
+
+        // How far into this transition we are (0.0 -> 1.0)
+        var lp = (p - acc) / s[1];
+
+        return s[0] + (s[1] * lp);
     }
 });
+PathVar.prototype = pathVarProto;
+
+function CirclePath(x, r, props) {
+    this.centerX = num(x);
+    this.radius = num(r);
+
+    this.copyProps(props);
+}
+var circlePathProto = Object.create(pathBaseProto, {
+    val: {
+        enumerable: true
+      , get: function() {
+            return this.centerX.val + this.fn(this.pos * 2.0 * Math.PI) * this.radius.val;
+        }
+    }
+});
+circlePathProto.cloneFill = ['speed', 'pos', 'fn'];
+circlePathProto.fn = Math.sin
+circlePathProto.protClone = function(props) {
+    return new CirclePath(
+        this.centerX
+      , this.radius
+      , props
+    );
+};
+//circlePathProto = Object.create(pathBaseProto, circlePathProto);
+CirclePath.prototype = circlePathProto;
 
 // Provides both the x and the y for circle paths, as an array.
 function circlePaths(x, y, r, props) {
