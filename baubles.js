@@ -169,8 +169,6 @@ function Shot() {
     var g = s.graphics;
     g.beginStroke("black").beginFill("#ffddaa").drawCircle(0,0,SHOT_RADIUS)
         .endStroke();
-    s.visible = false;
-    stage.addChild(s);
 
     sht.fired = false;
 
@@ -210,14 +208,14 @@ function Shot() {
             * Math.cos((180.0 - shooter.shape.rotation) * Math.PI / 180);
         sht.v = Shot.SPEED
             * Math.sin(-shooter.shape.rotation * Math.PI / 180);
-        s.visible = true;
+        stage.addChild(s);
         sht.fired = true;
 
         createjs.Ticker.addEventListener("tick", this.handleTick);
     }
     this.unfire = function() {
             createjs.Ticker.removeEventListener("tick", this.handleTick);
-            s.visible = false;
+            stage.removeChild(s);
             sht.fired = false;
     }
 }
@@ -226,11 +224,21 @@ Shot.SPEED = 500;
 function World(n) {
     var w = this;
     var c = w.container = new createjs.Container();
+    var spriteSheet = new createjs.SpriteSheet({
+        images: ["sprites.svg"],
+        frames: {
+            width: 64,
+            height: 64,
+            regX: 32,
+            regY: 32,
+        }
+    });
     var shapes = [];
     for (var i=0; i < worldPaths[n].length; ++i) {
-        var s = new createjs.Shape();
-        s.graphics.beginFill("#668").beginStroke("black")
-            .drawCircle(0,0,SHOT_RADIUS);
+        var s = new createjs.Sprite(spriteSheet);
+        s.gotoAndStop(i);
+        /* s.graphics.beginFill("#668").beginStroke("black")
+            .drawCircle(0,0,SHOT_RADIUS); */
         shapes[i] = s;
         //c.addChild(s);
         stage.addChild(s);

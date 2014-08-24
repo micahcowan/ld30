@@ -34,23 +34,30 @@ var worlds = [
       , ['Spot', "*Arf*... Spot wants a BONE!"]
       ]
     ]
+  , ['Gamers',
+      [ ['Astro', 'Astro SMASH!']
+      , ['3ntr0py', "w00t!! Pwnd ur ass, n00b!"]
+      , ['Bull3t', "I'm gonna kick your ass in Trog."]
+      , ['L0nelyGuy69', "Whatever happened to Pac Man?"]
+      , ['L0udM0uth', "I'm a gaming GOD!"]
+      ]
+    ]
   , ['Church',
       [ ['Pastor Bob', "Come and listen to the WORD!"]
       , ['Linda', "I'm giving an organ concert on Friday."]
-      ]
-    ]
-  , ['Gamers',
-      [ ['Astro', 'Astro SMASH!']
-      , ['3ntr0py', "Out of my way, n00b!"]
-      ]
-    ]
-  , ['Coffee Shop',
-      [ ['Barista', 'Would you like a cup of coffee?']
+      , ['Mark', "Listen to the voice of GOD!"]
       ]
     ]
   , ['Fetish Club',
       [ ['Daddy', "I've got a BONEr for you!"]
       , ['The Gimp', "What's the safety WORD?"]
+      , ['Beatrix', "Oh god my ass smarts!"]
+      , ['Barry', "Yes! Yes! Give me MORE!"]
+      ]
+    ]
+  , ['Coffee Shop',
+      [ ['Barista', 'Would you like a cup of coffee?']
+      , ['Larry', "Ooh! Too much coffee! ...Well, maybe just one MORE."]
       ]
     ]
 ];
@@ -60,6 +67,9 @@ var worldConnections = [
     ['Little Suzie', '3ntr0py', "OMG, could you BE any more n00bish?!"]
   , ['Spot', 'Daddy', "Hey great! You have a bone! Can I have it?"]
   , ['Pastor Bob', 'The Gimp', 'I heard you wanted me to share the WORD?']
+  , ['Mark', 'L0udM0uth', "Your voice is pretty loud, isn't it."]
+  , ['Barry', 'Larry', "Say, maybe a coffee enema's the ticket..."]
+  , ['Papa', 'Barista', "One coffee to go, please!"]
 ];
 
 // These don't connect worlds, but they produce a saying.
