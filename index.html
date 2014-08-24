@@ -25,7 +25,6 @@
             #tContainer {
                 //background-color: silver;
                 display: block;
-                visibility: hidden;
                 position: absolute;
                 top: 0; left: 0;
                 width: 400px; height: 600px;
@@ -33,13 +32,20 @@
                 z-index: 10;
             }
 
-            #tContent {
+            #tContent, #wLabelCon {
                 display: block;
                 background-color: silver;
                 border: solid 1px black;
                 position: relative;
                 margin: 15px;
                 //bottom: 300px;
+            }
+            #tContent {
+                visibility: hidden;
+            }
+
+            #wLabelCon {
+                background-color: #afa;
             }
 
             #combiner {
@@ -57,6 +63,7 @@
         <div id="combiner">
             <canvas id="screen" width="400" height="600"></canvas>
             <div id="tContainer">
+                <div id="wLabelCon"><b>World - <span id="worldLabel"></span></b></div>
                 <div id="tContent">
                     <b>Micah</b> Hello, world!
                 </div>

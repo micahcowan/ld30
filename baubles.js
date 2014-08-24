@@ -82,6 +82,8 @@ function init(ev) {
     tContainer.style.height = gameScreen.offsetHeight + 'px';
     tContainer.style.width = gameScreen.offsetWidth + 'px';
 
+    worldLabel = document.getElementById("worldLabel");
+
     createjs.Sound.alternateExtensions = ["mp3"];
     createjs.Sound.addEventListener("fileload", playMusic);
     createjs.Sound.registerSound("friendly-ditty.mp3", "music");
@@ -115,7 +117,7 @@ function saySomething(phrase) {
     createjs.Ticker.setPaused(true);
     var t = tContent;
     t.innerHTML = phrase;
-    tContainer.style.visibility = 'visible';
+    tContent.style.visibility = 'visible';
 }
 
 window.addEventListener("load", init);
@@ -146,7 +148,7 @@ function Shooter() {
         var k = getKProp(ev);
         if (createjs.Ticker.getPaused()) {
             createjs.Ticker.setPaused(false);
-            tContainer.style.visibility = 'hidden';
+            tContent.style.visibility = 'hidden';
             shot.unfire();
         }
 
@@ -263,6 +265,12 @@ function Shot() {
     }
     this.fire = function(ev) {
         if (sht.fired) return;
+        if (sht.shotType == Shot.TYPE_CONNECT) {
+            if (!grabbed) return;
+            s.gotoAndStop(grabbed.spriteNum);
+        }
+        else
+            s.gotoAndStop(sht.shotType);
 
         s.x = Shooter.X_POS;
         s.y = Shooter.Y_POS;
@@ -271,7 +279,6 @@ function Shot() {
             * Math.cos((180.0 - shooter.shape.rotation) * Math.PI / 180);
         sht.v = Shot.SPEED
             * Math.sin(-shooter.shape.rotation * Math.PI / 180);
-        s.gotoAndStop(sht.shotType);
         stage.addChild(s);
         sht.fired = true;
 

@@ -75,8 +75,9 @@ var worldConnections = [
 // These don't connect worlds, but they produce a saying.
 var worldDisconnections = [
     // Person -> World
-    ['Little Suzie', 'Fetish Club', "Ew... EW! Get AWAY!"]
-  , ['Linda', 'What kind of organ IS that?!']
+    ['Little Billy', 'Gamers', "Yay, video games!"]
+  , ['Little Suzie', 'Fetish Club', "Ew... EW! Get AWAY!"]
+  , ['Linda', 'Fetish Club', 'What kind of organ IS that?!']
 
     // Person -> Person
   , ['Papa', 'Daddy', "Oh, no... I don't want to be THAT kind of Daddy!"]
@@ -86,6 +87,8 @@ var worldDisconnections = [
 // World, WorldChanger classes
 function World(n) {
     var w = this;
+    var sprites = [];
+    this.whichWorld = n;
 
     // Load the world's actors (they can get swapped later)
     var actors = this.actors = [];
@@ -96,10 +99,20 @@ function World(n) {
     }
 
     var c = w.container = new createjs.Container();
+    this.registerActor = function(actor) {
+        if (actor.worldNum == this.whichWorld) {
+            var aNum = actor.actorNum;
+            if (sprites[aNum] !== undefined)
+                c.removeChild(sprites[aNum]);
+            this.actors[aNum] = actor;
+            sprites[aNum] = actor.graphics;
+            c.addChild(actor.graphics);
+        }
+    };
+
     // Load this world's sprites
     for (var i=0; i < worldPaths[n].length; ++i) {
-        c.addChild(actors[i].graphics);
-        //stage.addChild(s);
+        this.registerActor(actors[i]);
     }
 
     this.handleTick = function(ev) {
@@ -113,8 +126,6 @@ function World(n) {
             }
         }
     };
-
-    this.whichWorld = n;
 }
 World.prototype = new (function(){
     this.checkCollides = function(x, y, radius) {
@@ -145,6 +156,15 @@ World.prototype = new (function(){
                 this.actors[i].graphics.visible = false;
                 this.actors[i] = undefined;
                 shot.unfire();
+                //shot.shotType = Shot.TYPE_CONNECT;
+            }
+            else if (shot.shotType == Shot.TYPE_CONNECT) {
+                if (!grabbed.connect(this.actors[i])
+                    && !grabbed.remark(this.actors[i])) {
+
+                    // Actually, we'll never reach here.
+                    shot.unfire();
+                }
             }
         }
     };
@@ -173,12 +193,14 @@ function WorldChanger() {
         }
     }
     activate(wc.curWorldNum);
+    worldLabel.innerHTML = worlds[0][0];
 
     this.change = function() {
         var n = this.curWorldNum + 1;
         if (n >= ws.length)
             n = 0;
         activate(n);
+        worldLabel.innerHTML = worlds[n][0];
     }
 
     this.checkCollides = function(x, y, radius) {
@@ -189,23 +211,85 @@ function WorldChanger() {
 function Actor(wNum, aNum) {
                 //var thing = worlds[this.whichWorld][1][i];
     var entry = worlds[wNum][1][aNum];
+    this.actorNum = aNum;
+    this.worldNum = wNum;
+    this.connected = false;
 
     this.name = entry[0];
     this.phrase = function() {
         return entry[1];
     }
     this.goHome = function() {
-        var homeWorld = worldChanger.worlds[wNum];
-        if (homeWorld.actors[aNum] !== undefined)
+        var homeWorld = worldChanger.worlds[this.worldNum];
+        if (homeWorld.actors[this.actorNum] !== undefined)
             throw ("Hey! actor " + this.name + " wants to go home to "
-                   + wNum + ":" + aNum + ", but not empty.");
-        homeWorld.actors[aNum] = this;
+                   + this.worldNum + ":" + this.actorNum + ", but not empty.");
+        homeWorld.actors[this.actorNum] = this;
         this.graphics.visible= true;
     }
 
-    this.spriteNum = aNum;
+    this.spriteNum = aNum; //FIXME
     this.graphics = new createjs.Sprite(spriteSheet);
     this.graphics.gotoAndStop(this.spriteNum);
+
+    this.connect = function(other) {
+        if (this.connected || other.connected)
+            return false;
+
+        var on = other.name;
+        // XXX
+        for (var i=0; i < worldConnections.length; ++i) {
+            var item = worldConnections[i];
+            if ((item[0] == this.name && item[1] == other.name)
+                || (item[1] == this.name && item[0] == other.name)) {
+
+                saySomething('<b>' + item[0] + ':</b> ' + item[2]);
+                
+                // Swap their places
+                grabbed.goHome();
+                grabbed = undefined;
+
+                oldANum = this.actorNum;
+                oldWNum = this.worldNum;
+                this.actorNum = other.actorNum;
+                this.worldNum = other.worldNum;
+                other.actorNum = oldANum;
+                other.worldNum = oldWNum;
+                this.connected = true;
+                other.connected = true;
+                worldChanger.worlds[this.worldNum].registerActor(this);
+                worldChanger.worlds[other.worldNum].registerActor(other);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    this.remark = function(other) {
+        var on = other.name;
+
+        var remarker = other.name;
+        var remark = other.phrase();
+        // XXX
+        for (var i=0; i < worldDisconnections.length; ++i) {
+            var item = worldDisconnections[i];
+            if ((item[0] == this.name && item[1] == other.name)
+                || (item[1] == this.name && item[0] == other.name)) {
+
+                found = true;
+                remarker = item[0];
+                remark = item[2];
+                break;
+            }
+            else if (item[0] == this.name && item[1]
+                     == worlds[worldChanger.curWorldNum][0]) {
+                remarker = item[0];
+                remark = item[2];
+            }
+        }
+        saySomething('<b>' + remarker + ':</b> ' + remark);
+        return true;
+    }
 }
 
 var w0speed = 0.25;
