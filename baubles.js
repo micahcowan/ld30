@@ -60,7 +60,7 @@ function init(ev) {
 
     shooter = new Shooter();
     shot = new Shot();
-    world = new World(0);
+    world = new World(1);
 
     STAGE_RIGHT  = gameScreen.width;
     STAGE_BOTTOM = gameScreen.height;

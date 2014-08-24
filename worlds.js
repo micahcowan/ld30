@@ -88,7 +88,7 @@ var w0speed1 = -0.50;
 world0paths = circlePaths(200,200,140,{speed: w0speed});
 world0paths1 = circlePaths(200,200,50,{speed: w0speed1});
 
-w1varRad = new PathVar([[120],[160]],{speed: 2.0});
+w1varRad = new PathVar([[120],[160]],{speed: 2.5});
 world1paths = circlePaths(200,200,w1varRad,{speed: w0speed});
 
 var worldPaths = [

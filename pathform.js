@@ -21,6 +21,13 @@
    See <http://www.gnu.org/licenses/> for details of the GNU GPL version 3.
 */
 
+/*
+   Note: "Path" is maybe confusing. Originally these classes were all
+   descriptions of 2d paths; now they're all descriptions of
+   one-dimensional paths, which are used in pairs to describe 2d
+   coordinates that change over time.
+ */
+
 // Wrapper around plain numbers, so they act like PathVars.
 // Can be called around non-numbers, in which case just returns arg.
 function num(n) {
@@ -45,11 +52,12 @@ function ConstPath(n) {
     };
 }
 ConstPath.prototype = {
-    advance: function(delta) { return this.val; }
+    advance: function(delta) {}
 }
 
 var pathBaseProto = {
     cloneFill: ['speed', 'pos']
+  , advProps: ['speed']
   , speed: DEFAULT_SPEED
   , pos: 0.0
   , copyProps: function(props) {
@@ -67,7 +75,10 @@ var pathBaseProto = {
         }
     }
   , advance: function(delta) {
-        this.pos = (this.pos + this.speed.val * delta/1000.0) % 100.0;
+        for (var i=0; i < this.advProps.length; ++i) {
+            this[this.advProps[i]].advance(delta);
+        }
+        this.pos = (this.pos + this.speed.val * delta/1000.0) % 1.0;
     }
   , clone: function(props) {
         pnams = this.cloneFill;
@@ -123,23 +134,24 @@ Object.defineProperty(pathVarProto, 'val', {
         // based on our position (0.0 -> 1.0)
 
         // FIXME, should cache where we are within seq to improve performance
-        for (var i=0; i < seq.length; ++i) {
-            if (i > 0)
+        s = seq[0];
+        for (var i=1; i < seq.length; ++i) {
+            if (acc + seq[i-1][1] <= p) {
                 acc += seq[i-1][1];
-            if (acc <= p)
                 s = seq[i];
+            }
             else {
                 sn = seq[i];
                 break;
             }
         }
-        if (sn == undefined)
+        if (sn === undefined)
             sn = seq[0];
 
         // How far into this transition we are (0.0 -> 1.0)
         var lp = (p - acc) / s[1];
 
-        return s[0] + (s[1] * lp);
+        return s[0] + ((sn[0] - s[0]) * lp);
     }
 });
 PathVar.prototype = pathVarProto;
@@ -159,6 +171,7 @@ var circlePathProto = Object.create(pathBaseProto, {
     }
 });
 circlePathProto.cloneFill = ['speed', 'pos', 'fn'];
+circlePathProto.advProps = ['speed', 'radius', 'centerX'];
 circlePathProto.fn = Math.sin
 circlePathProto.protClone = function(props) {
     return new CirclePath(
