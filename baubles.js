@@ -29,6 +29,9 @@ var shooter;
 var shot;
 var world;
 
+var tContainer;
+var tContent;
+
 function init(ev) {
     gameScreen = document.getElementById("screen");
     stage = new createjs.Stage(gameScreen);
@@ -46,6 +49,13 @@ function init(ev) {
 
     createjs.Ticker.maxDelta = 200;
 
+    tContainer = document.getElementById("tContainer");
+    tContainer.style.left = gameScreen.offsetLeft + 'px';
+    tContainer.style.top = gameScreen.offsetTop + 'px';
+    tContainer.style.height = gameScreen.offsetHeight + 'px';
+    tContainer.style.width = gameScreen.offsetWidth + 'px';
+    tContent = document.getElementById("tContent");
+
     startGame();
 }
 
@@ -61,6 +71,15 @@ function getKProp(ev) {
         k = ev.keyIdentifier;
     }
     return k;
+}
+
+// idx: Index into which actor in this world should say something
+function saySomething(idx) {
+    var thing = worlds[world.whichWorld][1][idx];
+    createjs.Ticker.setPaused(true);
+    var t = tContent;
+    t.innerHTML = '<b>' + thing[0] + ':</b> ' + thing[1];
+    tContainer.style.visibility = 'visible';
 }
 
 window.addEventListener("load", init);
@@ -89,6 +108,12 @@ function Shooter() {
 
     this.handleKeyDown = function (ev) {
         var k = getKProp(ev);
+        if (createjs.Ticker.getPaused()) {
+            createjs.Ticker.setPaused(false);
+            tContainer.style.visibility = 'hidden';
+            shot.unfire();
+        }
+
         if (Shooter.LT_KEYS.indexOf(k) != -1) {
             this.movement = -1;
             ev.preventDefault = true;
@@ -109,6 +134,7 @@ function Shooter() {
         }
     }
     this.handleTick    = function (ev) {
+        if (ev.paused) return;
         var s = this.shape;
         s.rotation += this.movement * (ev.delta / 1000.0) * Shooter.MOVE_RATE;
         if (s.rotation < Shooter.ROT_MIN) {
@@ -135,7 +161,7 @@ Shooter.ROT_MAX = 145;
 Shooter.MOVE_RATE = Shooter.ROT_MAX - Shooter.ROT_MIN;
 Shooter.LT_KEYS = ['a', 'A', 'ArrowLeft', 'Left', 'U+0041'];
 Shooter.RT_KEYS = ['d', 'D', 'ArrowRight', 'Right', 'U+0044'];
-Shooter.FIRE_KEYS = [' ', 'Space', 'Enter', 'Return', 'U+0020'];
+Shooter.FIRE_KEYS = [' ', 'Space', 'Enter', 'Return', 'U+0020', 'W', 'w', 'U+0057', 'Up', 'ArrowUp'];
 
 function Shot() {
     var sht = this;
@@ -150,6 +176,7 @@ function Shot() {
 
     // Called as function: don't use "this".
     this.handleTick = function(ev) {
+        if (ev.paused) return;
         s.x += sht.h * ev.delta / 1000.0;
         s.y += sht.v * ev.delta / 1000.0;
 
@@ -168,8 +195,9 @@ function Shot() {
             sht.h = -sht.h;
         }
 
-        if (world.collides(s.x, s.y, SHOT_RADIUS)) {
-            sht.unfire();
+        var idx = world.checkCollides(s.x, s.y, SHOT_RADIUS);
+        if (idx !== undefined) {
+            saySomething(idx);
         }
     }
     this.fire = function(ev) {
@@ -209,20 +237,21 @@ function World(n) {
     }
     stage.addChild(c);
 
-    this.collides = function(x, y, radius) {
+    this.checkCollides = function(x, y, radius) {
         for (var i=0; i < worldPaths[n].length; ++i) {
             // Pythagorean theorem to find distance between points.
             var distX = x - worldPaths[n][i].x;
             var distY = y - worldPaths[n][i].y;
             var dist = Math.sqrt(distX * distX + distY * distY);
             if (dist < radius + SHOT_RADIUS) {
-                return true;
+                return i;
             }
         }
-        return false;
+        return undefined;
     }
 
     this.handleTick = function(ev) {
+        if (ev.paused) return;
         for (var i=0; i < worldPaths[n].length; ++i) {
             worldPaths[n][i].advance(ev.delta);
             shapes[i].x = worldPaths[n][i].x;
@@ -230,6 +259,8 @@ function World(n) {
         }
     }
     createjs.Ticker.addEventListener("tick", this.handleTick);
+
+    this.whichWorld = n;
 }
 
 var STAGE_LEFT = 0;

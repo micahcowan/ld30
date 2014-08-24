@@ -34,18 +34,23 @@ var worlds = [
       , ['Spot', "*Arf*... Spot wants a BONE!"]
       ]
     ]
-    ['Church',
+  , ['Church',
       [ ['Pastor Bob', "Come and listen to the WORD!"]
+      , ['Linda', "I'm giving an organ concert on Friday."]
       ]
     ]
   , ['Gamers',
       [ ['Astro', 'Astro SMASH!']
-      , ['3ntr0py', "n00b!"]
+      , ['3ntr0py', "Out of my way, n00b!"]
+      ]
+    ]
+  , ['Coffee Shop',
+      [ ['Barista', 'Would you like a cup of coffee?']
       ]
     ]
   , ['Fetish Club',
       [ ['Daddy', "I've got a BONEr for you!"]
-        ['The Gimp', "What's the safety WORD?"]
+      , ['The Gimp', "What's the safety WORD?"]
       ]
     ]
 ];
@@ -61,22 +66,22 @@ var worldConnections = [
 var worldDisconnections = [
     // Person -> World
     ['Little Suzie', 'Fetish Club', "Ew... EW! Get AWAY!"]
+  , ['Linda', 'What kind of organ IS that?!']
 
     // Person -> Person
   , ['Papa', 'Daddy', "Oh, no... I don't want to be THAT kind of Daddy!"]
-  , ['Mama', 'Daddy', "Oh MY! This Daddy's sexier than your Papa, isn't he?"]
+  , ['Mama', 'Daddy', "Oh MY! This &ldquo;Daddy&rdquo; is sexier than your Papa, isn't he?"]
 ];
 
 world0pathForm = new CirclePathForm(200,200,75);
 
-var w0speed = 0.25;
+var w0speed = 0.15;
 var worldPaths = [
     // world 0
     [ new Wpath(world0pathForm, 0.0, w0speed)
-    //, new Wpath(world0pathForm, 1/6.0, w0speed)
-    //, new Wpath(world0pathForm, 2/6.0, w0speed)
-    , new Wpath(world0pathForm, 3/6.0, w0speed)
-    //, new Wpath(world0pathForm, 4/6.0, w0speed)
-    //, new Wpath(world0pathForm, 5/6.0, w0speed)
+    , new Wpath(world0pathForm, 1/5.0, w0speed)
+    , new Wpath(world0pathForm, 2/5.0, w0speed)
+    , new Wpath(world0pathForm, 3/5.0, w0speed)
+    , new Wpath(world0pathForm, 4/5.0, w0speed)
     ]
 ];
