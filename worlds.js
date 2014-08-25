@@ -156,7 +156,7 @@ World.prototype = new (function(){
                 this.actors[i].graphics.visible = false;
                 this.actors[i] = undefined;
                 shot.unfire();
-                //shot.shotType = Shot.TYPE_CONNECT;
+                shot.shotType = Shot.TYPE_CONNECT;
             }
             else if (shot.shotType == Shot.TYPE_CONNECT) {
                 if (!grabbed.connect(this.actors[i])
@@ -238,7 +238,7 @@ function Actor(wNum, aNum) {
         this.graphics.visible= true;
     }
 
-    this.spriteNum = aNum; //FIXME
+    this.spriteNum = wNum*10 + aNum; //FIXME
     this.graphics = new createjs.Sprite(spriteSheet);
     this.graphics.gotoAndStop(this.spriteNum);
 
