@@ -36,11 +36,26 @@ var music;
 
 var tContainer;
 var tContent;
+var numConsLabel
+
 var backdrop;
+var won = false;
+
+function setNumCons() {
+    if (worldConnections.length == 0) {
+        won = true;
+        createjs.Ticker.setPaused(true);
+        window.alert("Congratulations, you've won!");
+    }
+    numConsLabel.innerHTML = worldConnections.length;
+}
 
 function init(ev) {
     gameScreen = document.getElementById("screen");
     stage = new createjs.Stage(gameScreen);
+
+    numConsLabel = document.getElementById("numConsLabel");
+    setNumCons();
 
     backdrop = new createjs.Shape();
     backdrop.graphics
@@ -146,6 +161,7 @@ function Shooter() {
 
     this.handleKeyDown = function (ev) {
         var k = getKProp(ev);
+        if (won) return;
         if (createjs.Ticker.getPaused()) {
             createjs.Ticker.setPaused(false);
             tContent.style.visibility = 'hidden';
@@ -265,8 +281,11 @@ function Shot() {
     }
     this.fire = function(ev) {
         if (sht.fired) return;
+
+        if (!grabbed && sht.shotType == Shot.TYPE_CONNECT)
+            sht.shotType = Shot.TYPE_TALK;
+
         if (sht.shotType == Shot.TYPE_CONNECT) {
-            if (!grabbed) return;
             s.gotoAndStop(grabbed.spriteNum);
         }
         else

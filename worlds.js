@@ -92,7 +92,7 @@ function World(n) {
 
     // Load the world's actors (they can get swapped later)
     var actors = this.actors = [];
-    for (var i=0; i < worldPaths[n].length; ++i) {
+    for (var i=0; i < worlds[n][1].length; ++i) {
         actors[i] = new Actor(n, i);
         actors[i].graphics.x = worldPaths[n][i][0].val;
         actors[i].graphics.y = worldPaths[n][i][1].val;
@@ -111,7 +111,7 @@ function World(n) {
     };
 
     // Load this world's sprites
-    for (var i=0; i < worldPaths[n].length; ++i) {
+    for (var i=0; i < worlds[n][1].length; ++i) {
         this.registerActor(actors[i]);
     }
 
@@ -195,16 +195,26 @@ function WorldChanger() {
     activate(wc.curWorldNum);
     worldLabel.innerHTML = worlds[0][0];
 
-    this.change = function() {
-        var n = this.curWorldNum + 1;
-        if (n >= ws.length)
-            n = 0;
+    this.change = function(n) {
+        if (n === undefined) {
+            n = this.curWorldNum + 1;
+            if (n >= ws.length)
+                n = 0;
+        }
         activate(n);
         worldLabel.innerHTML = worlds[n][0];
     }
 
     this.checkCollides = function(x, y, radius) {
         ws[wc.curWorldNum].checkCollides(x, y, radius);
+    }
+
+    this.openWorld = function() {
+        var wl = ws.length;
+        if (wl < worlds.length) {
+            ws.push(new World(wl));
+            this.change(wl);
+        }
     }
 }
 
@@ -259,6 +269,16 @@ function Actor(wNum, aNum) {
                 other.connected = true;
                 worldChanger.worlds[this.worldNum].registerActor(this);
                 worldChanger.worlds[other.worldNum].registerActor(other);
+
+                worldConnections.splice(i,1);
+                setNumCons();
+
+                // Should a new world be opened?
+                var w = (this.worldNum > other.worldNum)
+                            ? this.worldNum : other.worldNum;
+                if (w == worldChanger.worlds.length - 1) {
+                    worldChanger.openWorld();
+                }
                 return true;
             }
         }
@@ -308,6 +328,27 @@ var worldPaths = [
     , adjustedPaths(world0paths, {pos: 2/3.0})
     , adjustedPaths(world0paths1, {pos: 1/4.0})
     , adjustedPaths(world0paths1, {pos: 3/4.0})
+    ]
+    // world 1
+  , [ world1paths
+    , adjustedPaths(world1paths, {pos: 1/5.0})
+    , adjustedPaths(world1paths, {pos: 2/5.0})
+    , adjustedPaths(world1paths, {pos: 3/5.0})
+    , adjustedPaths(world1paths, {pos: 4/5.0})
+    ]
+    // world 1
+  , [ world1paths
+    , adjustedPaths(world1paths, {pos: 1/5.0})
+    , adjustedPaths(world1paths, {pos: 2/5.0})
+    , adjustedPaths(world1paths, {pos: 3/5.0})
+    , adjustedPaths(world1paths, {pos: 4/5.0})
+    ]
+    // world 1
+  , [ world1paths
+    , adjustedPaths(world1paths, {pos: 1/5.0})
+    , adjustedPaths(world1paths, {pos: 2/5.0})
+    , adjustedPaths(world1paths, {pos: 3/5.0})
+    , adjustedPaths(world1paths, {pos: 4/5.0})
     ]
     // world 1
   , [ world1paths
