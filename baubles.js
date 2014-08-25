@@ -170,14 +170,15 @@ function Shooter() {
 
         if (Shooter.LT_KEYS.indexOf(k) != -1) {
             this.movement = -1;
-            ev.preventDefault = true;
+            ev.preventDefault();
         }
         else if (Shooter.RT_KEYS.indexOf(k) != -1) {
             this.movement = 1;
-            ev.preventDefault = true;
+            ev.preventDefault();
         }
         else if (Shooter.FIRE_KEYS.indexOf(k) != -1) {
             shot.fire();
+            ev.preventDefault();
         }
         else if (Shooter.TALK_KEYS.indexOf(k) != -1) {
             if (!shot.fired)
@@ -198,14 +199,14 @@ function Shooter() {
             (this.movement > 0 && Shooter.RT_KEYS.indexOf(k) != -1)) {
 
             this.movement = 0;
-            ev.preventDefault = true;
+            ev.preventDefault();
         }
         else if (Shooter.MUSIC_KEYS.indexOf(k) != -1 && music !== undefined) {
             music.pause() || music.resume();
         }
         else if (Shooter.WORLD_KEYS.indexOf(k) != -1) {
             worldChanger.change();
-            ev.preventDefault = true;
+            ev.preventDefault();
         }
     }
     this.handleTick    = function (ev) {
@@ -241,7 +242,6 @@ Shooter.MUSIC_KEYS = ['M', 'm', 'U+004D'];
 Shooter.TALK_KEYS = ['T', 't', 'U+0054'];
 Shooter.GRAB_KEYS = ['G', 'g', 'U+0047'];
 Shooter.CONNECT_KEYS = ['C', 'c', 'U+0043'];
-//Shooter.WORLD_KEYS = ['Tab'];
 Shooter.WORLD_KEYS = ['Q', 'q', 'U+0051'];
 
 function Shot() {
