@@ -326,6 +326,20 @@ var world0paths1 = circlePaths(200,200,50,{speed: w0speed1});
 var w1varRad = new PathVar([[120],[160]],{speed: 2.15});
 var world1paths = circlePaths(200,200,w1varRad,{speed: w0speed});
 
+var w2speed = 0.435;
+var world2path0 = circlePaths(200, 200, 140, {speed: w2speed});
+var world2path1 = circlePaths(200, 200, 110, {speed: -w2speed});
+var world2path2 = circlePaths(200, 200, 80, {speed: w2speed});
+
+var w3speed = 0.5;
+var world3path = new PathVar([[60, 3], [340, 1], [60, 0]], {speed: w3speed});
+
+var w4speed = 0.15;
+var w4varRad = new PathVar([[0],[160]],{speed: 0.65});
+var w4varRad1 = new PathVar([[0],[160]],{speed: 0.65, pos: 0.5});
+var world4paths = circlePaths(200, 200, w4varRad,{speed:w4speed});
+var world4paths1 = circlePaths(200, 200, w4varRad1,{speed:w4speed, pos: 0.5});
+
 var worldPaths = [
     // world 0
     [ world0paths
@@ -341,25 +355,25 @@ var worldPaths = [
     , adjustedPaths(world1paths, {pos: 3/5.0})
     , adjustedPaths(world1paths, {pos: 4/5.0})
     ]
-    // world 1
-  , [ clonePaths(world1paths)
-    , adjustedPaths(world1paths, {pos: 1/5.0})
-    , adjustedPaths(world1paths, {pos: 2/5.0})
-    , adjustedPaths(world1paths, {pos: 3/5.0})
-    , adjustedPaths(world1paths, {pos: 4/5.0})
+    // world 2
+  , [ world2path0
+    , world2path1
+    , world2path2
+//  , adjustedPaths(world1paths, {pos: 3/5.0})
+//  , adjustedPaths(world1paths, {pos: 4/5.0})
     ]
-    // world 1
-  , [ clonePaths(world1paths)
-    , adjustedPaths(world1paths, {pos: 1/5.0})
-    , adjustedPaths(world1paths, {pos: 2/5.0})
-    , adjustedPaths(world1paths, {pos: 3/5.0})
-    , adjustedPaths(world1paths, {pos: 4/5.0})
+    // world 3
+  , [ [world3path, num(80)]
+    , adjustedPaths([world3path, num(110)], {pos: 1/4.0})
+    , adjustedPaths([world3path, num(140)], {pos: 2/4.0})
+    , adjustedPaths([world3path, num(200)], {pos: 3/4.0})
+//  , adjustedPaths(world1paths, {pos: 4/5.0})
     ]
-    // world 1
-  , [ clonePaths(world1paths)
-    , adjustedPaths(world1paths, {pos: 1/5.0})
-    , adjustedPaths(world1paths, {pos: 2/5.0})
-    , adjustedPaths(world1paths, {pos: 3/5.0})
-    , adjustedPaths(world1paths, {pos: 4/5.0})
+    // world 4
+  , [ world4paths
+    , world4paths1
+//  , adjustedPaths(world1paths, {pos: 2/5.0})
+//  , adjustedPaths(world1paths, {pos: 3/5.0})
+//  , adjustedPaths(world1paths, {pos: 4/5.0})
     ]
 ];

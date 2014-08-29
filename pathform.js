@@ -156,6 +156,13 @@ Object.defineProperty(pathVarProto, 'val', {
         return s[0] + ((sn[0] - s[0]) * lp);
     }
 });
+pathVarProto.protClone = function(props) {
+    // FIXME, this.seq should be cloned.
+    return new PathVar(
+        this.seq
+      , props
+    );
+};
 PathVar.prototype = pathVarProto;
 
 function CirclePath(x, r, props) {
