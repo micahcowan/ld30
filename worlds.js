@@ -342,21 +342,21 @@ var worldPaths = [
     , adjustedPaths(world1paths, {pos: 4/5.0})
     ]
     // world 1
-  , [ world1paths
+  , [ clonePaths(world1paths)
     , adjustedPaths(world1paths, {pos: 1/5.0})
     , adjustedPaths(world1paths, {pos: 2/5.0})
     , adjustedPaths(world1paths, {pos: 3/5.0})
     , adjustedPaths(world1paths, {pos: 4/5.0})
     ]
     // world 1
-  , [ world1paths
+  , [ clonePaths(world1paths)
     , adjustedPaths(world1paths, {pos: 1/5.0})
     , adjustedPaths(world1paths, {pos: 2/5.0})
     , adjustedPaths(world1paths, {pos: 3/5.0})
     , adjustedPaths(world1paths, {pos: 4/5.0})
     ]
     // world 1
-  , [ world1paths
+  , [ clonePaths(world1paths)
     , adjustedPaths(world1paths, {pos: 1/5.0})
     , adjustedPaths(world1paths, {pos: 2/5.0})
     , adjustedPaths(world1paths, {pos: 3/5.0})

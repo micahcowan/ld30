@@ -90,7 +90,7 @@ function init(ev) {
     window.addEventListener("keyup",
         function(ev) { shooter.handleKeyUp(ev); }, false);
 
-    createjs.Ticker.maxDelta = 200;
+    createjs.Ticker.maxDelta = 60;
 
     tContainer = document.getElementById("tContainer");
     tContent = document.getElementById("tContent");

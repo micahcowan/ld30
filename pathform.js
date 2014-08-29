@@ -206,3 +206,7 @@ function adjustedPaths(paths, props) {
     }
     return ret;
 }
+
+function clonePaths(paths) {
+    return adjustedPaths(paths, {});
+}
