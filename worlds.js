@@ -23,6 +23,8 @@
    See <http://www.gnu.org/licenses/> for details of the GNU GPL version 3.
 */
 
+"use strict";
+
 // The worlds, in order of appearance, their members, and their
 // catchphrases.
 var worlds = [
@@ -254,31 +256,34 @@ function Actor(wNum, aNum) {
                 || (item[1] == this.name && item[0] == other.name)) {
 
                 saySomething('<b>' + item[0] + ':</b> ' + item[2]);
-                
-                // Swap their places
-                grabbed.goHome();
-                grabbed = undefined;
 
-                oldANum = this.actorNum;
-                oldWNum = this.worldNum;
-                this.actorNum = other.actorNum;
-                this.worldNum = other.worldNum;
-                other.actorNum = oldANum;
-                other.worldNum = oldWNum;
-                this.connected = true;
-                other.connected = true;
-                worldChanger.worlds[this.worldNum].registerActor(this);
-                worldChanger.worlds[other.worldNum].registerActor(other);
+                var th = this;
+                postSay = function() {
+                    // Swap their places
+                    grabbed.goHome();
+                    grabbed = undefined;
 
-                worldConnections.splice(i,1);
-                setNumCons();
+                    var oldANum = th.actorNum;
+                    var oldWNum = th.worldNum;
+                    th.actorNum = other.actorNum;
+                    th.worldNum = other.worldNum;
+                    other.actorNum = oldANum;
+                    other.worldNum = oldWNum;
+                    th.connected = true;
+                    other.connected = true;
+                    worldChanger.worlds[th.worldNum].registerActor(th);
+                    worldChanger.worlds[other.worldNum].registerActor(other);
 
-                // Should a new world be opened?
-                var w = (this.worldNum > other.worldNum)
-                            ? this.worldNum : other.worldNum;
-                if (w == worldChanger.worlds.length - 1) {
-                    worldChanger.openWorld();
-                }
+                    worldConnections.splice(i,1);
+                    setNumCons();
+
+                    // Should a new world be opened?
+                    var w = (th.worldNum > other.worldNum)
+                                ? th.worldNum : other.worldNum;
+                    if (w == worldChanger.worlds.length - 1) {
+                        worldChanger.openWorld();
+                    }
+                };
                 return true;
             }
         }
@@ -315,11 +320,11 @@ function Actor(wNum, aNum) {
 var w0speed = 0.25;
 var w0speed1 = -0.50;
 
-world0paths = circlePaths(200,200,140,{speed: w0speed});
-world0paths1 = circlePaths(200,200,50,{speed: w0speed1});
+var world0paths = circlePaths(200,200,140,{speed: w0speed});
+var world0paths1 = circlePaths(200,200,50,{speed: w0speed1});
 
-w1varRad = new PathVar([[120],[160]],{speed: 2.15});
-world1paths = circlePaths(200,200,w1varRad,{speed: w0speed});
+var w1varRad = new PathVar([[120],[160]],{speed: 2.15});
+var world1paths = circlePaths(200,200,w1varRad,{speed: w0speed});
 
 var worldPaths = [
     // world 0

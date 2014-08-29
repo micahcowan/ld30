@@ -23,6 +23,8 @@
    See <http://www.gnu.org/licenses/> for details of the GNU GPL version 3.
 */
 
+"use strict";
+
 var gameScreen;
 var stage;
 var spriteSheet;
@@ -40,6 +42,7 @@ var numConsLabel
 
 var backdrop;
 var won = false;
+var postSay = null;
 
 function setNumCons() {
     if (worldConnections.length == 0) {
@@ -166,6 +169,11 @@ function Shooter() {
             createjs.Ticker.setPaused(false);
             tContent.style.visibility = 'hidden';
             shot.unfire();
+            if (postSay !== null) {
+                var fn = postSay;
+                postSay = null;
+                fn();
+            }
         }
 
         if (Shooter.LT_KEYS.indexOf(k) != -1) {

@@ -21,6 +21,8 @@
    See <http://www.gnu.org/licenses/> for details of the GNU GPL version 3.
 */
 
+"use strict";
+
 /*
    Note: "Path" is maybe confusing. Originally these classes were all
    descriptions of 2d paths; now they're all descriptions of
@@ -38,7 +40,7 @@ function num(n) {
         return n;
     }
 }
-DEFAULT_SPEED = num(1.0);
+var DEFAULT_SPEED = num(1.0);
 
 function ConstPath(n) {
     Object.defineProperty(this, 'val', {
@@ -81,7 +83,7 @@ var pathBaseProto = {
         this.pos = (this.pos + this.speed.val * delta/1000.0) % 1.0;
     }
   , clone: function(props) {
-        pnams = this.cloneFill;
+        var pnams = this.cloneFill;
         var nProps = {};
         var pkeys = Object.keys(props);
         for (var i=0; i < pkeys.length; ++i) {
