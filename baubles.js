@@ -38,7 +38,8 @@ var music;
 
 var tContainer;
 var tContent;
-var numConsLabel
+var numConsLabel;
+var worldLabel;
 
 var backdrop;
 var won = false;
@@ -59,6 +60,15 @@ function init(ev) {
 
     numConsLabel = document.getElementById("numConsLabel");
     setNumCons();
+
+    tContainer = document.getElementById("tContainer");
+    tContent = document.getElementById("tContent");
+    worldLabel = document.getElementById("worldLabel");
+
+    tContainer.style.left = gameScreen.offsetLeft + 'px';
+    tContainer.style.top = gameScreen.offsetTop + 'px';
+    tContainer.style.height = gameScreen.offsetHeight + 'px';
+    tContainer.style.width = gameScreen.offsetWidth + 'px';
 
     backdrop = new createjs.Shape();
     backdrop.graphics
@@ -91,16 +101,6 @@ function init(ev) {
         function(ev) { shooter.handleKeyUp(ev); }, false);
 
     createjs.Ticker.maxDelta = 60;
-
-    tContainer = document.getElementById("tContainer");
-    tContent = document.getElementById("tContent");
-
-    tContainer.style.left = gameScreen.offsetLeft + 'px';
-    tContainer.style.top = gameScreen.offsetTop + 'px';
-    tContainer.style.height = gameScreen.offsetHeight + 'px';
-    tContainer.style.width = gameScreen.offsetWidth + 'px';
-
-    worldLabel = document.getElementById("worldLabel");
 
     createjs.Sound.alternateExtensions = ["mp3"];
     createjs.Sound.addEventListener("fileload", playMusic);
