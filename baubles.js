@@ -28,6 +28,7 @@
 var gameScreen;
 var stage;
 var spriteSheet;
+var spriteSheetImg;
 var shooter;
 var shot;
 var world;
@@ -78,8 +79,26 @@ function init(ev) {
         .drawRect(0,0,400,600);
     stage.addChild(backdrop);
 
+    spriteSheetImg = document.createElement("img");
+    spriteSheetImg.src = 'sprites.svg';
+    spriteSheetImg.addEventListener('load', startGame);
+
+    createjs.Sound.alternateExtensions = ["mp3"];
+    createjs.Sound.addEventListener("fileload", playMusic);
+    createjs.Sound.registerSound("friendly-ditty.mp3", "music");
+    createjs.Sound.registerSound("shoot.mp3", "shoot");
+}
+
+function playMusic(event) {
+    if (event.id == "music" && music === undefined) {
+        music = createjs.Sound.play("music", {loop: -1});
+        music.volume = 0.5;
+    }
+}
+
+function startGame() {
     spriteSheet = new createjs.SpriteSheet({
-        images: ["sprites.svg"],
+        images: [spriteSheetImg],
         frames: {
             width: 64,
             height: 64,
@@ -102,22 +121,6 @@ function init(ev) {
 
     createjs.Ticker.maxDelta = 60;
 
-    createjs.Sound.alternateExtensions = ["mp3"];
-    createjs.Sound.addEventListener("fileload", playMusic);
-    createjs.Sound.registerSound("friendly-ditty.mp3", "music");
-    createjs.Sound.registerSound("shoot.mp3", "shoot");
-
-    startGame();
-}
-
-function playMusic(event) {
-    if (event.id == "music" && music === undefined) {
-        music = createjs.Sound.play("music", {loop: -1});
-        music.volume = 0.5;
-    }
-}
-
-function startGame() {
     stage.update();
     createjs.Ticker.addEventListener("tick", stage);
 }
