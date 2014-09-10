@@ -80,7 +80,7 @@ function init(ev) {
     stage.addChild(backdrop);
 
     spriteSheetImg = document.createElement("img");
-    spriteSheetImg.src = 'sprites.svg';
+    spriteSheetImg.src = 'sprites-a.svg';
     spriteSheetImg.addEventListener('load', startGame);
 
     createjs.Sound.alternateExtensions = ["mp3"];
